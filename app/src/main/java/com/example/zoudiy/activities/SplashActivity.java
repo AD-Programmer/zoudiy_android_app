@@ -24,12 +24,12 @@ public class  SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 // This method will be executed once the timer is over
-                if (Preference.getAccessToken(SplashActivity.this)!=null){
-                    Intent i = new Intent(SplashActivity.this, MainActivity.class);
+                if (Preference.getAccessToken(SplashActivity.this) == null){
+                    Intent i=new Intent(SplashActivity.this,Number.class);
                     startActivity(i);
                 }
                 else{
-                    Intent i = new Intent(SplashActivity.this, Signup.class);
+                    Intent i = new Intent(SplashActivity.this, HomeActivity.class);
                     startActivity(i);
                 }
                 finish();
