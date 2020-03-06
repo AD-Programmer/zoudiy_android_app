@@ -1,6 +1,7 @@
 package com.example.zoudiy.interfaces;
 
 import com.example.zoudiy.models.OtpResponse;
+import com.example.zoudiy.models.UpdateProfileResponse;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -24,5 +25,15 @@ public interface JsonPlaceholderApi {
             (
                     @Field("phone") String mobileno,
                     @Field("otp") String Otp
+            );
+
+    @FormUrlEncoded
+    @POST("profile/update-profile")
+    Call<UpdateProfileResponse> Updateprofile
+            (
+                    @Field("name") String fullname,
+                    @Field("email") String emailid,
+                    @Field("token") String token
+
             );
 }
