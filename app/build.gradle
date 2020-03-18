@@ -43,4 +43,5 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.0.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'com.github.GoodieBag:Pinview:v1.4'
+    implementation 'org.jetbrains:annotations:15.0'
 }

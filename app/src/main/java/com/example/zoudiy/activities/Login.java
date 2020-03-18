@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zoudiy.interfaces.SimpleCountDownTimer;
 import com.example.zoudiy.utils.Preference;
 import com.example.zoudiy.R;
 import com.example.zoudiy.utils.RetrofitClient;
@@ -29,13 +30,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class Login extends AppCompatActivity {
+public class Login extends AppCompatActivity implements SimpleCountDownTimer.OnCountDownListener {
 
     EditText MobileNo;
     TextView Didnt;
     Pinview pin6;
     public String mobileNo,getotp;
 
+    private final SimpleCountDownTimer simpleCountDownTimer = new SimpleCountDownTimer(0, 10, 1, this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +46,7 @@ public class Login extends AppCompatActivity {
         pin6 = (Pinview) findViewById(R.id.pinview);
         pin6.setTextColor(Color.parseColor("#1E645F"));
         pin6.setPinViewEventListener(new Pinview.PinViewEventListener() {
-            @Override
+
             public void onDataEntered(Pinview pinview, boolean fromUser) {
                 getotp= pinview.getValue();
                 if( getotp.length() == 6 )
@@ -90,12 +92,18 @@ public class Login extends AppCompatActivity {
         Didnt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
+//                new Handler().postDelayed(new Runnable() {
+//                    public void run() {
+//                        // yourMethod();
+//                        simpleCountDownTimer.start(false);
+//                    }
+//                }, 10000);
                         Toast.makeText(Login.this, "Otp Resend Successfully", Toast.LENGTH_LONG).show();
+
                         // This method will be executed once the timer is over
-                        mobileNo = "+91" + " " + MobileNo.getText().toString();
+                        Intent intent= getIntent();
+
+                        mobileNo = intent.getStringExtra("Mobile_no");
                         Call<ResponseBody> call = RetrofitClient
                                 .getInstance()
                                 .getApi()
@@ -104,11 +112,13 @@ public class Login extends AppCompatActivity {
                             @Override
                             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                                 try {
-                                    String s = response.body().string();
-                                    Log.d("Success",s);
-                                    Intent intent= new Intent(Login.this,Signup.class);
-                                    intent.putExtra("Mobile_no", mobileNo);
-                                    startActivity(intent);
+                                    if(response.isSuccessful()==true) {
+                                        String s = response.body().string();
+                                        Log.d("Success", s);
+                                    }
+                                    else{
+                                        Toast.makeText(Login.this, "Wait for 10 second", Toast.LENGTH_LONG).show();
+                                    }
                                     //Toast.makeText(Login.this, s, Toast.LENGTH_LONG).show();
                                 } catch (IOException e) {
                                     e.printStackTrace();
@@ -122,11 +132,23 @@ public class Login extends AppCompatActivity {
                             }
                         });
                         finish();
-                    }
-                }, 10000);
             }
         });
 
 
+    }
+
+    @Override
+    public void onCountDownActive(String time) {
+        Didnt.post(() -> Didnt.setText(time));
+
+        Toast.makeText(this, "Seconds = " + simpleCountDownTimer.getSecondsTillCountDown() , Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCountDownFinished() {
+        Didnt.post(() -> {
+            Didnt.setText("Otp send again");
+        });
     }
 }
